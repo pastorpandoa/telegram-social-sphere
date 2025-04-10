@@ -5,6 +5,7 @@ import { setupMainButton } from '../utils/telegramWebApp';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Pencil } from 'lucide-react';
 
 interface UserProfileProps {
@@ -88,15 +89,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
   };
   
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="relative pb-0 pt-6">
+    <Card className="overflow-hidden bg-black/80 border-gray-800 text-white">
+      <CardHeader className="relative pb-0 pt-6 bg-gradient-to-b from-primary/20 to-black/0">
         <div className="absolute top-2 right-2">
           {editable && (
             <Button
               variant="ghost"
               size="icon"
               onClick={onEditClick}
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full text-white"
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -104,79 +105,79 @@ const UserProfile: React.FC<UserProfileProps> = ({
         </div>
         
         <div className="flex flex-col items-center">
-          <Avatar className="h-24 w-24 mb-2 shadow-md">
+          <Avatar className="h-24 w-24 mb-2 shadow-md border-2 border-primary/30">
             {userProfile.photoUrl ? (
               <AvatarImage src={userProfile.photoUrl} />
             ) : (
-              <AvatarFallback className="text-xl bg-telegram text-white">
+              <AvatarFallback className="text-xl bg-primary/20 text-primary">
                 {getInitials()}
               </AvatarFallback>
             )}
           </Avatar>
           
-          <h2 className="text-xl font-semibold">
+          <h2 className="text-xl font-semibold text-white">
             {userProfile.firstName} {userProfile.lastName || ''}
           </h2>
           
           {userProfile.username && (
-            <span className="text-muted-foreground text-sm">@{userProfile.username}</span>
+            <span className="text-gray-400 text-sm">@{userProfile.username}</span>
           )}
         </div>
       </CardHeader>
       
       <CardContent className="pt-6">
         {userProfile.bio ? (
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Sobre mí</h3>
-            <p className="text-sm">{userProfile.bio}</p>
+          <div className="mb-6 p-3 bg-black/50 rounded-lg border border-gray-800">
+            <h3 className="text-sm font-medium text-gray-400 mb-1">Sobre mí</h3>
+            <p className="text-sm text-white">{userProfile.bio}</p>
           </div>
         ) : editable && !hasCompletedProfile ? (
           <div className="mb-4 text-center">
-            <p className="text-sm text-muted-foreground italic">
+            <p className="text-sm text-gray-400 italic">
               Añade una biografía para completar tu perfil
             </p>
           </div>
         ) : null}
         
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4 text-white">
           {userProfile.height && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Estatura</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Estatura</h3>
               <p className="text-sm">{userProfile.height} cm</p>
             </div>
           )}
           
           {userProfile.weight && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Peso</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Peso</h3>
               <p className="text-sm">{userProfile.weight} kg</p>
             </div>
           )}
           
           {userProfile.bodyType && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Tipo</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Tipo</h3>
               <p className="text-sm">{getBodyTypeLabel(userProfile.bodyType)}</p>
             </div>
           )}
           
           {userProfile.sexuality && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Sexualidad</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Sexualidad</h3>
               <p className="text-sm">{getSexualityLabel(userProfile.sexuality)}</p>
             </div>
           )}
           
           {userProfile.position && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Posición</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Posición</h3>
               <p className="text-sm">{getPositionLabel(userProfile.position)}</p>
             </div>
           )}
           
           {userProfile.tribe && (
-            <div>
-              <h3 className="text-xs font-medium text-muted-foreground">Tribe</h3>
+            <div className="bg-black/40 p-2 rounded border border-gray-800 text-center">
+              <h3 className="text-xs font-medium text-gray-400">Tribe</h3>
               <p className="text-sm">{getTribeLabel(userProfile.tribe)}</p>
             </div>
           )}

@@ -4,9 +4,10 @@ import { useUser } from '../contexts/UserContext';
 import { getNearbyUsers, Location, UserLocationData } from '../utils/locationService';
 import UserCard from './UserCard';
 import { Button } from '@/components/ui/button';
-import { Loader2, MapPin, RefreshCcw } from 'lucide-react';
+import { Loader2, MapPin, RefreshCcw, ArrowUpDown, Filter } from 'lucide-react';
 import { showTelegramAlert } from '../utils/telegramWebApp';
 import { UserProfile } from '../contexts/UserContext';
+import { Badge } from '@/components/ui/badge';
 
 // Mock users data - in a real app, this would come from an API
 const MOCK_USERS: UserProfile[] = [
@@ -74,6 +75,8 @@ const NearbyUsers: React.FC<NearbyUsersProps> = ({ onViewProfile, onMessage }) =
   const [nearbyUsers, setNearbyUsers] = useState<Array<UserProfile & { distance?: number }>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<string>("distance");
+  const [showFilters, setShowFilters] = useState<boolean>(false);
   
   // Load nearby users when user location changes
   useEffect(() => {
@@ -113,14 +116,9 @@ const NearbyUsers: React.FC<NearbyUsersProps> = ({ onViewProfile, onMessage }) =
         };
       });
       
-      // Sort by distance
-      nearbyUsersWithDistance.sort((a, b) => {
-        if (a.distance === undefined) return 1;
-        if (b.distance === undefined) return -1;
-        return a.distance - b.distance;
-      });
+      // Sort by distance by default
+      sortUsers(nearbyUsersWithDistance, sortType);
       
-      setNearbyUsers(nearbyUsersWithDistance);
     } catch (err) {
       console.error('Failed to load nearby users:', err);
       setError('Failed to load nearby users');
@@ -128,6 +126,37 @@ const NearbyUsers: React.FC<NearbyUsersProps> = ({ onViewProfile, onMessage }) =
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  // Sort users by the selected sort type
+  const sortUsers = (users: Array<UserProfile & { distance?: number }>, type: string) => {
+    const sorted = [...users];
+    
+    switch(type) {
+      case "distance":
+        sorted.sort((a, b) => {
+          if (a.distance === undefined) return 1;
+          if (b.distance === undefined) return -1;
+          return a.distance - b.distance;
+        });
+        break;
+      case "activity":
+        // Simulating activity sorting with random order for demo
+        sorted.sort(() => Math.random() - 0.5);
+        break;
+      case "new":
+        // Simulating newest users sorting with random order for demo
+        sorted.sort(() => Math.random() - 0.5);
+        break;
+    }
+    
+    setNearbyUsers(sorted);
+  };
+  
+  // Handle sort change
+  const handleSortChange = (type: string) => {
+    setSortType(type);
+    sortUsers(nearbyUsers, type);
   };
   
   // Handle refresh button click
@@ -138,7 +167,7 @@ const NearbyUsers: React.FC<NearbyUsersProps> = ({ onViewProfile, onMessage }) =
   if (isLoading) {
     return (
       <div className="flex justify-center my-8">
-        <Loader2 className="h-8 w-8 text-telegram animate-spin" />
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -184,10 +213,45 @@ const NearbyUsers: React.FC<NearbyUsersProps> = ({ onViewProfile, onMessage }) =
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium">People Nearby</h2>
-        <Button variant="ghost" size="sm" onClick={handleRefresh}>
-          <RefreshCcw className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
+            <Filter className="h-4 w-4 mr-1" />
+            Filters
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleRefresh}>
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
+      
+      {showFilters && (
+        <div className="p-2 bg-black/30 backdrop-blur-md rounded-lg border border-gray-800">
+          <div className="text-sm font-medium mb-2">Sort by:</div>
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={sortType === "distance" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => handleSortChange("distance")}
+            >
+              Distance
+            </Badge>
+            <Badge 
+              variant={sortType === "activity" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => handleSortChange("activity")}
+            >
+              Activity
+            </Badge>
+            <Badge 
+              variant={sortType === "new" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => handleSortChange("new")}
+            >
+              New
+            </Badge>
+          </div>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 gap-4">
         {nearbyUsers.map(user => (
