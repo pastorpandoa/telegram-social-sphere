@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className={`telegram-app min-h-screen bg-background text-foreground ${isTelegram ? 'pb-14' : ''}`}>
-      <div className="container mx-auto px-4 py-4 max-w-md">
+      <div className="container mx-auto px-2 py-2 max-w-md">
         {children}
       </div>
     </div>

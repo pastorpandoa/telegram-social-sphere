@@ -4,7 +4,6 @@ import { useUser, UserProfile as UserProfileType } from '../contexts/UserContext
 import { setupMainButton } from '../utils/telegramWebApp';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Pencil } from 'lucide-react';
 
@@ -42,6 +41,50 @@ const UserProfile: React.FC<UserProfileProps> = ({
   
   const getInitials = () => {
     return `${userProfile.firstName?.charAt(0) || ''}${userProfile.lastName?.charAt(0) || ''}`;
+  };
+
+  const getBodyTypeLabel = (value: string) => {
+    const types: {[key: string]: string} = {
+      "delgado": "Delgado",
+      "fit": "Fit",
+      "musculoso": "Musculoso",
+      "promedio": "Promedio",
+      "gordioso": "Gordi-oso",
+      "grande": "Grande"
+    };
+    return types[value] || value;
+  };
+
+  const getSexualityLabel = (value: string) => {
+    const types: {[key: string]: string} = {
+      "hetero": "Hetero",
+      "bi": "Bi",
+      "homosexual": "Homosexual"
+    };
+    return types[value] || value;
+  };
+
+  const getPositionLabel = (value: string) => {
+    const types: {[key: string]: string} = {
+      "activo": "Activo",
+      "versatil_act": "Versátil Activo",
+      "versatil": "Versátil", 
+      "versatil_pas": "Versátil Pasivo",
+      "pasivo": "Pasivo"
+    };
+    return types[value] || value;
+  };
+
+  const getTribeLabel = (value: string) => {
+    const types: {[key: string]: string} = {
+      "daddy": "Daddy",
+      "twink": "Twink",
+      "jock": "Jock",
+      "bear": "Bear",
+      "otter": "Otter",
+      "wolf": "Wolf"
+    };
+    return types[value] || value;
   };
   
   return (
@@ -84,35 +127,60 @@ const UserProfile: React.FC<UserProfileProps> = ({
       <CardContent className="pt-6">
         {userProfile.bio ? (
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">About</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Sobre mí</h3>
             <p className="text-sm">{userProfile.bio}</p>
           </div>
         ) : editable && !hasCompletedProfile ? (
           <div className="mb-4 text-center">
             <p className="text-sm text-muted-foreground italic">
-              Add a bio to complete your profile
+              Añade una biografía para completar tu perfil
             </p>
           </div>
         ) : null}
         
-        {userProfile.interests && userProfile.interests.length > 0 ? (
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Interests</h3>
-            <div className="flex flex-wrap gap-1.5">
-              {userProfile.interests.map((interest, index) => (
-                <Badge key={index} variant="secondary">
-                  {interest}
-                </Badge>
-              ))}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          {userProfile.height && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Estatura</h3>
+              <p className="text-sm">{userProfile.height} cm</p>
             </div>
-          </div>
-        ) : editable && !hasCompletedProfile ? (
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground italic">
-              Add some interests to find like-minded people
-            </p>
-          </div>
-        ) : null}
+          )}
+          
+          {userProfile.weight && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Peso</h3>
+              <p className="text-sm">{userProfile.weight} kg</p>
+            </div>
+          )}
+          
+          {userProfile.bodyType && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Tipo</h3>
+              <p className="text-sm">{getBodyTypeLabel(userProfile.bodyType)}</p>
+            </div>
+          )}
+          
+          {userProfile.sexuality && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Sexualidad</h3>
+              <p className="text-sm">{getSexualityLabel(userProfile.sexuality)}</p>
+            </div>
+          )}
+          
+          {userProfile.position && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Posición</h3>
+              <p className="text-sm">{getPositionLabel(userProfile.position)}</p>
+            </div>
+          )}
+          
+          {userProfile.tribe && (
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground">Tribe</h3>
+              <p className="text-sm">{getTribeLabel(userProfile.tribe)}</p>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

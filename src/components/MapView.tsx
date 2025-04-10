@@ -3,23 +3,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { Location } from '../utils/locationService';
 import { Card } from '@/components/ui/card';
-import { MapPin, Loader2 } from 'lucide-react';
-
-// In a real app, you would use a mapping library like Mapbox or Google Maps
-// For this prototype, we'll create a simple visualization
+import { MapPin, Loader2, User } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MapViewProps {
   userLocations?: Array<{
     userId: string;
     location: Location;
     name: string;
+    photoUrl?: string;
   }>;
+  onUserClick?: (userId: string) => void;
 }
 
-const MapView: React.FC<MapViewProps> = ({ userLocations = [] }) => {
+const MapView: React.FC<MapViewProps> = ({ userLocations = [], onUserClick }) => {
   const { userLocation } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userMarkers, setUserMarkers] = useState<{ x: number; y: number; user: any }[]>([]);
   
   useEffect(() => {
     if (!canvasRef.current || !userLocation) return;
@@ -74,6 +75,8 @@ const MapView: React.FC<MapViewProps> = ({ userLocations = [] }) => {
       ctx.fill();
       
       // Draw nearby users
+      const markers: { x: number; y: number; user: any }[] = [];
+      
       userLocations.forEach((user, index) => {
         // Generate positions around the center (in a real map, this would use actual coordinates)
         const angle = (index / userLocations.length) * Math.PI * 2;
@@ -81,17 +84,27 @@ const MapView: React.FC<MapViewProps> = ({ userLocations = [] }) => {
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
+        // Store marker positions for click detection
+        markers.push({ x, y, user });
+        
         // Draw user point
         ctx.beginPath();
-        ctx.arc(x, y, 6, 0, 2 * Math.PI);
-        ctx.fillStyle = '#666';
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0088cc';
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
         ctx.fill();
         
         // Draw user name
         ctx.font = '12px Arial';
         ctx.fillStyle = '#333';
-        ctx.fillText(user.name, x - 15, y - 10);
+        ctx.fillText(user.name, x - 15, y - 12);
       });
+      
+      setUserMarkers(markers);
     };
     
     // Initial draw
@@ -115,9 +128,31 @@ const MapView: React.FC<MapViewProps> = ({ userLocations = [] }) => {
     };
   }, [userLocation, userLocations]);
   
+  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !onUserClick) return;
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    // Check if click is on a user marker
+    for (const marker of userMarkers) {
+      const dx = marker.x - x;
+      const dy = marker.y - y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance <= 10) {
+        // Click is on this user
+        onUserClick(marker.user.userId);
+        break;
+      }
+    }
+  };
+  
   if (!userLocation) {
     return (
-      <Card className="relative w-full h-64 flex items-center justify-center bg-muted/30">
+      <Card className="relative w-full h-[75vh] flex items-center justify-center bg-muted/30">
         <div className="text-center p-4">
           <MapPin className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">
@@ -130,22 +165,46 @@ const MapView: React.FC<MapViewProps> = ({ userLocations = [] }) => {
   
   if (isLoading) {
     return (
-      <Card className="relative w-full h-64 flex items-center justify-center bg-muted/30">
+      <Card className="relative w-full h-[75vh] flex items-center justify-center bg-muted/30">
         <Loader2 className="h-8 w-8 text-telegram animate-spin" />
       </Card>
     );
   }
   
   return (
-    <Card className="relative w-full h-64 overflow-hidden">
-      <canvas 
-        ref={canvasRef}
-        className="w-full h-full"
-      />
-      <div className="absolute bottom-2 right-2 bg-background/70 text-xs px-2 py-1 rounded">
-        Demo Map (Not real location)
-      </div>
-    </Card>
+    <div className="space-y-2">
+      <Card className="relative w-full h-[75vh] overflow-hidden">
+        <canvas 
+          ref={canvasRef}
+          className="w-full h-full cursor-pointer"
+          onClick={handleCanvasClick}
+        />
+        <div className="absolute bottom-2 right-2 bg-background/70 text-xs px-2 py-1 rounded">
+          Usuarios cercanos: {userLocations.length}
+        </div>
+        
+        <div className="absolute bottom-4 left-4 flex flex-col space-y-2">
+          {userLocations.slice(0, 3).map(user => (
+            <div 
+              key={user.userId} 
+              className="bg-background/80 backdrop-blur-sm rounded-full p-1 flex items-center space-x-2 cursor-pointer hover:bg-background/90 transition-colors"
+              onClick={() => onUserClick && onUserClick(user.userId)}
+            >
+              <Avatar className="h-8 w-8">
+                {user.photoUrl ? (
+                  <AvatarImage src={user.photoUrl} alt={user.name} />
+                ) : (
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <span className="text-sm font-medium pr-2">{user.name}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 };
 

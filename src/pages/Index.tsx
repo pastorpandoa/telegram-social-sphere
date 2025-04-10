@@ -5,7 +5,7 @@ import Layout from '../components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserProfile from '../components/UserProfile';
 import NearbyUsers from '../components/NearbyUsers';
-import ProfileForm from '../components/ProfileForm';
+import ProfileExtendedForm from '../components/ProfileExtendedForm';
 import MapView from '../components/MapView';
 import { useUser } from '../contexts/UserContext';
 import { showTelegramAlert } from '../utils/telegramWebApp';
@@ -15,14 +15,14 @@ import { Card } from '@/components/ui/card';
 
 const IndexContent = () => {
   const { currentUser, hasCompletedProfile } = useUser();
-  const [activeTab, setActiveTab] = useState('nearby');
+  const [activeTab, setActiveTab] = useState('map');
   const [isEditingProfile, setIsEditingProfile] = useState(!hasCompletedProfile);
   const [viewedUserId, setViewedUserId] = useState<string | null>(null);
   
   // Handle profile form completion
   const handleProfileComplete = () => {
     setIsEditingProfile(false);
-    showTelegramAlert('Profile updated successfully!');
+    showTelegramAlert('Perfil actualizado con éxito!');
   };
   
   // Handle user card click
@@ -34,7 +34,7 @@ const IndexContent = () => {
   // Handle message user
   const handleMessageUser = (userId: string) => {
     // In a real app, this would open Telegram chat or create a new chat
-    showTelegramAlert(`Messaging would open chat with user ${userId}`);
+    showTelegramAlert(`Se abriría chat con usuario ${userId}`);
     
     // Try to open the user's Telegram profile if it's a Telegram username
     const username = MOCK_USERS.find(u => u.id === userId)?.username;
@@ -46,12 +46,12 @@ const IndexContent = () => {
   // Reset viewed profile
   const handleBackToList = () => {
     setViewedUserId(null);
-    setActiveTab('nearby');
+    setActiveTab('map');
   };
   
   // Find viewed user in mock data
   const viewedUser = viewedUserId 
-    ? MOCK_USERS.find(user => user.id === viewedUserId) 
+    ? MOCK_USERS.find(user => user.id === userId) 
     : null;
     
   return (
@@ -59,18 +59,18 @@ const IndexContent = () => {
       {/* Show profile creation form if profile is incomplete */}
       {!hasCompletedProfile && isEditingProfile ? (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-center">Complete Your Profile</h2>
-          <ProfileForm onComplete={handleProfileComplete} />
+          <h2 className="text-xl font-semibold text-center">Completa tu perfil</h2>
+          <ProfileExtendedForm onComplete={handleProfileComplete} />
         </div>
       ) : isEditingProfile ? (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Edit Profile</h2>
+            <h2 className="text-xl font-semibold">Editar perfil</h2>
             <Button variant="ghost" size="sm" onClick={() => setIsEditingProfile(false)}>
-              Cancel
+              Cancelar
             </Button>
           </div>
-          <ProfileForm onComplete={handleProfileComplete} />
+          <ProfileExtendedForm onComplete={handleProfileComplete} />
         </div>
       ) : viewedUserId ? (
         <div className="space-y-4">
@@ -80,7 +80,7 @@ const IndexContent = () => {
             onClick={handleBackToList} 
             className="mb-2"
           >
-            ← Back to nearby
+            ← Volver al mapa
           </Button>
           
           {viewedUser && (
@@ -93,7 +93,7 @@ const IndexContent = () => {
                 onClick={() => handleMessageUser(viewedUserId)}
                 className="w-full bg-telegram hover:bg-telegram-dark"
               >
-                Message on Telegram
+                Mensaje en Telegram
               </Button>
             </>
           )}
@@ -106,54 +106,42 @@ const IndexContent = () => {
             className="w-full"
           >
             <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="nearby" className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Nearby</span>
-              </TabsTrigger>
               <TabsTrigger value="map" className="flex items-center gap-1">
                 <Map className="h-4 w-4" />
-                <span className="hidden sm:inline">Map</span>
+                <span className="hidden sm:inline">Mapa</span>
+              </TabsTrigger>
+              <TabsTrigger value="nearby" className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Cercanos</span>
               </TabsTrigger>
               <TabsTrigger value="profile" className="flex items-center gap-1">
                 <UserCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Profile</span>
+                <span className="hidden sm:inline">Perfil</span>
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="nearby" className="mt-4 space-y-4">
-              <NearbyUsers 
-                onViewProfile={handleViewProfile}
-                onMessage={handleMessageUser}
-              />
-            </TabsContent>
-            
-            <TabsContent value="map" className="mt-4 space-y-4">
-              <h2 className="text-lg font-medium mb-2">People Around You</h2>
+            <TabsContent value="map" className="mt-2">
               <MapView 
                 userLocations={
-                  MOCK_USERS.slice(0, 5).map((user, index) => ({
+                  MOCK_USERS.map((user, index) => ({
                     userId: user.id,
                     name: user.firstName,
+                    photoUrl: user.photoUrl,
                     location: {
                       latitude: 40.7128 + (Math.random() - 0.5) * 0.01,
                       longitude: -74.006 + (Math.random() - 0.5) * 0.01
                     }
                   }))
                 }
+                onUserClick={handleViewProfile}
               />
-              <div className="grid grid-cols-2 gap-2 mt-4">
-                {MOCK_USERS.slice(0, 4).map(user => (
-                  <Card key={user.id} className="p-2 flex items-center gap-2 cursor-pointer"
-                    onClick={() => handleViewProfile(user.id)}>
-                    <div className="h-8 w-8 rounded-full bg-muted overflow-hidden flex-shrink-0">
-                      {user.photoUrl && <img src={user.photoUrl} alt={user.firstName} className="h-full w-full object-cover" />}
-                    </div>
-                    <div className="truncate">
-                      <span className="text-sm font-medium">{user.firstName}</span>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+            </TabsContent>
+            
+            <TabsContent value="nearby" className="mt-4 space-y-4">
+              <NearbyUsers 
+                onViewProfile={handleViewProfile}
+                onMessage={handleMessageUser}
+              />
             </TabsContent>
             
             <TabsContent value="profile" className="mt-4">
@@ -178,7 +166,12 @@ const MOCK_USERS = [
     username: "alexmiller",
     photoUrl: "https://i.pravatar.cc/150?img=1",
     bio: "Tech enthusiast and coffee addict. Love hiking on weekends.",
-    interests: ["Technology", "Coffee", "Hiking", "Photography"]
+    height: "180",
+    weight: "75",
+    bodyType: "fit",
+    sexuality: "bi",
+    position: "versatil",
+    tribe: "jock"
   },
   {
     id: "user2",
@@ -187,7 +180,12 @@ const MOCK_USERS = [
     username: "sophiagarcia",
     photoUrl: "https://i.pravatar.cc/150?img=5",
     bio: "Digital artist and music lover. Looking for concert buddies.",
-    interests: ["Art", "Music", "Concerts", "Design"]
+    height: "165",
+    weight: "60",
+    bodyType: "promedio",
+    sexuality: "hetero",
+    position: "activo",
+    tribe: "twink"
   },
   {
     id: "user3",
@@ -196,7 +194,12 @@ const MOCK_USERS = [
     username: "jameswong",
     photoUrl: "https://i.pravatar.cc/150?img=3",
     bio: "Foodie exploring the best restaurants in town. Amateur chef.",
-    interests: ["Food", "Cooking", "Travel", "Wine"]
+    height: "175",
+    weight: "80",
+    bodyType: "musculoso",
+    sexuality: "homosexual",
+    position: "versatil_pas",
+    tribe: "wolf"
   },
   {
     id: "user4",
@@ -205,7 +208,12 @@ const MOCK_USERS = [
     username: "emmataylor",
     photoUrl: "https://i.pravatar.cc/150?img=9",
     bio: "Fitness trainer and yoga instructor. Love outdoor activities.",
-    interests: ["Fitness", "Yoga", "Running", "Nutrition"]
+    height: "170",
+    weight: "65",
+    bodyType: "fit",
+    sexuality: "bi",
+    position: "pasivo",
+    tribe: "otter"
   },
 ];
 

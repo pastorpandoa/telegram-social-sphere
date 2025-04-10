@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getTelegramUser, initTelegramWebApp } from '../utils/telegramWebApp';
 import { getCurrentLocation, Location, watchUserLocation } from '../utils/locationService';
@@ -10,7 +9,12 @@ export interface UserProfile {
   username?: string;
   photoUrl?: string;
   bio?: string;
-  interests?: string[];
+  height?: number;
+  weight?: number;
+  bodyType?: string;
+  sexuality?: string;
+  position?: string;
+  tribe?: string;
 }
 
 interface UserContextType {
@@ -39,21 +43,17 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   
-  // Check if user has completed their profile (added bio and interests)
   const hasCompletedProfile = Boolean(
-    currentUser && currentUser.bio && currentUser.interests && currentUser.interests.length > 0
+    currentUser && currentUser.bio && currentUser.height && currentUser.weight && currentUser.bodyType && currentUser.sexuality && currentUser.position && currentUser.tribe
   );
 
-  // Initialize the app with Telegram user data
   useEffect(() => {
     async function initializeUser() {
       try {
         setIsLoading(true);
         
-        // Initialize Telegram Web App
         initTelegramWebApp();
         
-        // Get Telegram user data
         const telegramUser = getTelegramUser();
         
         if (telegramUser) {
@@ -65,7 +65,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             photoUrl: telegramUser.photo_url,
           });
         } else {
-          // For development without Telegram
           setCurrentUser({
             id: 'dev-user-123',
             firstName: 'Development',
@@ -74,7 +73,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
         
-        // Get initial location
         try {
           const location = await getCurrentLocation();
           setUserLocation(location);
@@ -92,7 +90,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeUser();
   }, []);
   
-  // Watch for location updates
   useEffect(() => {
     if (!currentUser) return;
     
@@ -108,7 +105,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return stopWatching;
   }, [currentUser]);
   
-  // Function to update user profile data
   const setUserProfile = (profileData: Partial<UserProfile>) => {
     if (!currentUser) return;
     
@@ -117,7 +113,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...profileData,
     });
     
-    // In a real app, this would be saved to a database
     console.log('Profile updated:', { ...currentUser, ...profileData });
   };
   
