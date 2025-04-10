@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { Button } from '@/components/ui/button';
@@ -42,12 +41,12 @@ const ProfileExtendedForm: React.FC<{ onComplete: () => void }> = ({ onComplete 
   // Parse input to number
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setHeight(value ? Number(value) : undefined);
+    setHeight(value ? parseInt(value, 10) : undefined);
   };
   
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setWeight(value ? Number(value) : undefined);
+    setWeight(value ? parseInt(value, 10) : undefined);
   };
   
   // Save the profile

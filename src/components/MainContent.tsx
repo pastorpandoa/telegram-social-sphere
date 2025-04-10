@@ -9,9 +9,10 @@ import NearbyTab from './tabs/NearbyTab';
 import ProfileTab from './tabs/ProfileTab';
 import ViewProfileScreen from './screens/ViewProfileScreen';
 import ProfileFormScreen from './screens/ProfileFormScreen';
+import { UserProfile } from '../contexts/UserContext';
 
 // Mock users data - in a real app, this would come from an API
-const MOCK_USERS = [
+const MOCK_USERS: UserProfile[] = [
   {
     id: "user1",
     firstName: "Alex",
@@ -94,9 +95,9 @@ const MainContent: React.FC = () => {
     showTelegramAlert(`Se abriría chat con usuario ${userId}`);
     
     // Try to open the user's Telegram profile if it's a Telegram username
-    const username = MOCK_USERS.find(u => u.id === userId)?.username;
-    if (username) {
-      window.open(`https://t.me/${username}`, '_blank');
+    const user = MOCK_USERS.find(u => u.id === userId);
+    if (user?.username) {
+      window.open(`https://t.me/${user.username}`, '_blank');
     }
   };
   

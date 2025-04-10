@@ -15,7 +15,6 @@ export interface UserProfile {
   sexuality?: string;
   position?: string;
   tribe?: string;
-  interests?: string[]; // Added interests property
 }
 
 interface UserContextType {
