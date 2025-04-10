@@ -20,8 +20,8 @@ const ProfileExtendedForm: React.FC<{ onComplete: () => void }> = ({ onComplete 
   const { currentUser, setUserProfile } = useUser();
   
   const [bio, setBio] = useState(currentUser?.bio || '');
-  const [height, setHeight] = useState(currentUser?.height || '');
-  const [weight, setWeight] = useState(currentUser?.weight || '');
+  const [height, setHeight] = useState<number | undefined>(currentUser?.height);
+  const [weight, setWeight] = useState<number | undefined>(currentUser?.weight);
   const [bodyType, setBodyType] = useState(currentUser?.bodyType || '');
   const [sexuality, setSexuality] = useState(currentUser?.sexuality || '');
   const [position, setPosition] = useState(currentUser?.position || '');
@@ -38,6 +38,17 @@ const ProfileExtendedForm: React.FC<{ onComplete: () => void }> = ({ onComplete 
       }
     };
   }, [bio, height, weight, bodyType, sexuality, position, tribe]);
+  
+  // Parse input to number
+  const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setHeight(value ? Number(value) : undefined);
+  };
+  
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setWeight(value ? Number(value) : undefined);
+  };
   
   // Save the profile
   const handleSave = () => {
@@ -86,8 +97,8 @@ const ProfileExtendedForm: React.FC<{ onComplete: () => void }> = ({ onComplete 
             id="height"
             type="number"
             placeholder="170"
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
+            value={height || ''}
+            onChange={handleHeightChange}
           />
         </div>
         
@@ -97,8 +108,8 @@ const ProfileExtendedForm: React.FC<{ onComplete: () => void }> = ({ onComplete 
             id="weight"
             type="number"
             placeholder="70"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
+            value={weight || ''}
+            onChange={handleWeightChange}
           />
         </div>
       </div>

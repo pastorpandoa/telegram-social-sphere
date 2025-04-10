@@ -79,21 +79,6 @@ const UserCard: React.FC<UserCardProps> = ({
         {user.bio && (
           <p className="text-sm line-clamp-2 mb-2">{user.bio}</p>
         )}
-        
-        {user.interests && user.interests.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {user.interests.slice(0, 3).map((interest, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {interest}
-              </Badge>
-            ))}
-            {user.interests.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{user.interests.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
       </CardContent>
       
       <CardFooter className="pt-0 pb-3">

@@ -16,7 +16,12 @@ const MOCK_USERS: UserProfile[] = [
     lastName: "Miller",
     photoUrl: "https://i.pravatar.cc/150?img=1",
     bio: "Tech enthusiast and coffee addict. Love hiking on weekends.",
-    interests: ["Technology", "Coffee", "Hiking", "Photography"]
+    height: 180,
+    weight: 75,
+    bodyType: "fit",
+    sexuality: "bi",
+    position: "versatil",
+    tribe: "jock"
   },
   {
     id: "user2",
@@ -24,7 +29,12 @@ const MOCK_USERS: UserProfile[] = [
     lastName: "Garcia",
     photoUrl: "https://i.pravatar.cc/150?img=5",
     bio: "Digital artist and music lover. Looking for concert buddies.",
-    interests: ["Art", "Music", "Concerts", "Design"]
+    height: 165,
+    weight: 60,
+    bodyType: "promedio",
+    sexuality: "hetero",
+    position: "activo",
+    tribe: "twink"
   },
   {
     id: "user3",
@@ -32,7 +42,12 @@ const MOCK_USERS: UserProfile[] = [
     lastName: "Wong",
     photoUrl: "https://i.pravatar.cc/150?img=3",
     bio: "Foodie exploring the best restaurants in town. Amateur chef.",
-    interests: ["Food", "Cooking", "Travel", "Wine"]
+    height: 175,
+    weight: 80,
+    bodyType: "musculoso",
+    sexuality: "homosexual",
+    position: "versatil_pas",
+    tribe: "wolf"
   },
   {
     id: "user4",
@@ -40,7 +55,12 @@ const MOCK_USERS: UserProfile[] = [
     lastName: "Taylor",
     photoUrl: "https://i.pravatar.cc/150?img=9",
     bio: "Fitness trainer and yoga instructor. Love outdoor activities.",
-    interests: ["Fitness", "Yoga", "Running", "Nutrition"]
+    height: 170,
+    weight: 65,
+    bodyType: "fit",
+    sexuality: "bi",
+    position: "pasivo",
+    tribe: "otter"
   },
 ];
 
